@@ -1,8 +1,11 @@
 import datetime, socket, struct, time, queue, threading, select
 
 precition = 2**32
-taskQueue = queue.Queue()
 stopFlag = False
+host = "127.0.0.1"
+port = 123
+
+taskQueue = queue.Queue()
 
 def system_to_ntp_time(timestamp):
     return timestamp + NTP.NTP_DELTA
@@ -40,18 +43,17 @@ class NTP:
     MODE_TABLE = {0 : "unspecified",
                   1 : "symmetric active",
                   2 : "symmetric passive",
-                3: "client",
-        4: "server",
-        5: "broadcast",
-        6: "reserved for NTP control messages",
-        7: "reserved for private use",
-    }
-    LEAP_TABLE = {
-        0: "no warning",
-        1: "last minute has 61 seconds",
-        2: "last minute has 59 seconds",
-        3: "alarm condition (clock not synchronized)",
-    }
+                  3 : "client",
+                  4 : "server",
+                  5 : "broadcast",
+                  6 : "reserved for NTP control messages",
+                  7 : "reserved for private use",
+                 }
+    LEAP_TABLE = {0 : "no warning",
+                  1 : "last minute has 61 seconds",
+                  2 : "last minute has 59 seconds",
+                  3 : "alarm condition (clock not synchronized)",
+                 }
 
 class NTPPacket:
     _PACKET_FORMAT = "!B B B b 11I"
@@ -178,10 +180,8 @@ class WorkThread(threading.Thread):
             except queue.Empty:
                 continue
                 
-listenIp = "192.168.2.101"
-listenPort = 5000
 socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-socket.bind((listenIp,listenPort))
+socket.bind((host,port))
 print("local socket: ", socket.getsockname())
 recvThread = RecvThread(socket)
 recvThread.start()
