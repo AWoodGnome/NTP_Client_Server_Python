@@ -1,0 +1,2 @@
+class NTPException(Exception):
+    pass
