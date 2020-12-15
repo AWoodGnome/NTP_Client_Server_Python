@@ -12,13 +12,13 @@ class RecvThread(threading.Thread):
             if ntp_server().getStopFlag() == True:
                 print("RecvThread Ended")
                 break
-            rlist,wlist,elist = select.select([self.socket],[],[],1);
+            rlist, wlist, elist = select.select([self.socket],[],[],1);
             if len(rlist) != 0:
                 print("Received %d packets" % len(rlist))
                 for tempSocket in rlist:
                     try:
-                        data,addr = tempSocket.recvfrom(1024)
+                        data, addr = tempSocket.recvfrom(1024)
                         recvTimestamp = recvTimestamp = calculation().system_to_ntp_time(time.time())
-                        ntp_server().getTaskQueue().put((data,addr,recvTimestamp))
+                        ntp_server().setTaskQueue(data,addr,recvTimestamp)
                     except socket.error:
                         print(msg)

@@ -14,9 +14,15 @@ class WorkThread(threading.Thread):
             try:
                 taskQueue = ntp_server().getTaskQueue()
                 data, addr, recvTimestamp = taskQueue.get(timeout=1)
+                taskBool = True
+            except queue.Empty:
+                taskBool = False
+                continue
+            if taskBool == True:
                 recvPacket = NTPPacket()
                 recvPacket.from_data(data)
-                timeStamp_high,timeStamp_low = recvPacket.GetTxTimeStamp()
+                timeStamp_high, timeStamp_low = recvPacket.GetTxTimeStamp()
+                print(5)
                 sendPacket = NTPPacket(version=3, mode=4)
                 sendPacket.stratum = 2
                 sendPacket.poll = 10
@@ -26,5 +32,3 @@ class WorkThread(threading.Thread):
                 sendPacket.tx_timestamp = system_to_ntp_time(time.time())
                 socket.sendto(sendPacket.to_data(),addr)
                 print("Sended to %s:%d" % (addr[0],addr[1]))
-            except queue.Empty:
-                continue

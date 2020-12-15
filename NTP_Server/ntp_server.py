@@ -19,12 +19,15 @@ class ntp_server():
     def getTaskQueue(self):
         return self.taskQueue
 
+    def setTaskQueue(self, data, addr, recvTimestamp):
+        self.taskQueue.put((data,addr,recvTimestamp))
+
     def server(self):
-        import datetime, socket, struct, time, select
+        import socket, time
         from recvThread import RecvThread
         from workThread import WorkThread
 
-        socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         socket.bind((self.host, self.port))
         print("local socket: ", socket.getsockname())
         recvThread = RecvThread(socket)
